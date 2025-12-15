@@ -14,10 +14,15 @@ spec:
     spec:
       containers:
         - name: restaurant-service
-          image: restaurant-service:1.0
-          imagePullPolicy: IfNotPresent
+          image: restaurant-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 5001
           env:
             - name: JWT_SECRET
-              value: "f468468cb80df37d0de5096e8f130519e8d60296f1b56448de012db650de94c7"
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:4000"

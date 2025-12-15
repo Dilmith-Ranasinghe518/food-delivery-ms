@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: order-service:1.0
+          ports:
+            - containerPort: 6000
+          env:
+            - name: JWT_SECRET
+              value: "f468468cb80df37d0de5096e8f130519e8d60296f1b56448de012db650de94c7"
