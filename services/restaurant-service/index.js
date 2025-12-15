@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+require("dotenv").config({ path: "../../.env" });
 
 const app = express();
 app.use(cors());
@@ -21,11 +22,18 @@ async function authMiddleware(req, res, next) {
     const token = authHeader.replace("Bearer ", "");
 
     // Call Auth Service (Kubernetes DNS name later)
-    const response = await axios.get("http://auth-service:4000/auth/me", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const AUTH_SERVICE_URL =
+      process.env.AUTH_SERVICE_URL || "http://localhost:4000";
 
-    req.user = response.data.user;
+    const response = await axios.get(
+      `${AUTH_SERVICE_URL}/auth/me`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+
+    req.user = response.data;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized" });

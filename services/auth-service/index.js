@@ -2,13 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+require("dotenv").config({ path: "../../.env" });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const PORT = 4000;
-const JWT_SECRET = "1000295fd6fb986102664798d1d5a87860c0d20cfa3913f313818234a0b1363b";
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET is not defined in .env");
+  process.exit(1);
+}
 
 // Temporary in-memory user store
 const users = [];
@@ -68,6 +74,29 @@ app.post("/auth/login", async (req, res) => {
 
   res.json({ message: "Logged in", token });
 });
+
+app.get("/auth/me", (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: "No token" });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    res.json({
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role
+    });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Auth service running on port ${PORT}`);
