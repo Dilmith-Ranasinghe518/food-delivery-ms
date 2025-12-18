@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: delivery-service
+  template:
+    metadata:
+      labels:
+        app: delivery-service
+    spec:
+      containers:
+        - name: delivery-service
+          image: delivery-service:1.0
+          ports:
+            - containerPort: 7001
+          env:
+            - name: JWT_SECRET
+              value: "f468468cb80df37d0de5096e8f130519e8d60296f1b56448de012db650de94c7"
+  
