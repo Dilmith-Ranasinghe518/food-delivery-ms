@@ -41,7 +41,14 @@ echo "✅ Docker images built"
 
 echo "☸️ Applying Kubernetes manifests..."
 
-kubectl apply -f k8s/secrets.yaml
+if [ -f "k8s/secrets_local.yaml" ]; then
+    echo "🔑 Applying LOCAL secrets..."
+    kubectl apply -f k8s/secrets_local.yaml
+else
+    echo "⚠️ Applying placeholder secrets..."
+    kubectl apply -f k8s/secrets.yaml
+fi
+
 kubectl apply -f k8s/auth/
 kubectl apply -f k8s/restaurant/
 kubectl apply -f k8s/order/
